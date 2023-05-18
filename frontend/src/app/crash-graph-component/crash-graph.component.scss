@@ -1,5 +1,21 @@
 #divChart{
     display: block;
-    width: 400px;
-    height: 400px;
+    position: relative;
+    width: 800px;
+    height: 800px;
 }
+#divChart {
+    position: relative;
+  }
+  
+  .crash-score {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size:40px;
+    font-weight: 400;
+  }
+  .red {
+    color: red;
+  }

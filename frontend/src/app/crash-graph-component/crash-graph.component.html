@@ -1,3 +1,7 @@
-<div id="divChart">
+<div  id="divChart">
     <canvas id="myChart"></canvas>
-</div>
+    <div class="crash-score" [ngClass]="{ 'red': end }">
+        {{ crashScore }}<span *ngIf="!end && start">x</span>
+      </div>
+      
+  </div>
