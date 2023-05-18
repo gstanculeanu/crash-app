@@ -14,40 +14,11 @@ export class CrashGraphComponent implements OnInit{
   crashScore='1';
   start=false;
   end=false;
+  myChart:any;
   constructor(private mainPageService: MainPageService) { }
 
   ngOnInit(): void {
-    const crashPoint: string = this.getCrashPoint().toString();
-    const myChart = this.generateGraph(1);
-  
-  
-    const delay = 70; // Delay in milliseconds
-    const existingLabel = '';
-  
-    let i = 1;
-    let multiplier = i.toFixed(2);
-    const checkLoop = () => {
-      if (parseFloat(multiplier) === parseFloat(crashPoint)) {
-        this.crashScore = `Crashed at ${crashPoint}x`;
-        this.end = true;
-        clearTimeout(timer); // Stop the timer
-      } else if (parseFloat(multiplier) < parseFloat(crashPoint)) {
-        this.crashScore = multiplier;
-        this.start=true;
-        this.addData(myChart, existingLabel, multiplier);
-        i += 0.01; // Increment i here after adding data
-        multiplier = i.toFixed(2); // Update the multiplier value
-        timer = setTimeout(checkLoop, delay); // Call checkLoop recursively
-      }
-    };
-    
-    let timer: any;
-
-this.countDownFromSeven(() => {
-  // Code to execute after countDownFromSeven finishes
-  timer = setTimeout(checkLoop, delay); // Start the first timer
-});
-    
+  this.startGame();
     
   }
   
@@ -55,7 +26,7 @@ this.countDownFromSeven(() => {
     let count = 7;
   
     const countdown = () => {
-      console.log(count);
+
   
       if (count > 0) {
         setTimeout(countdown, 1000);
@@ -91,7 +62,48 @@ addData(chart: any, label: any, data: any) {
   }
 }
 startGame(){
+  const crashPoint: string = this.getCrashPoint().toString();
+  console.log(crashPoint);
+  this.myChart = this.generateGraph(1);
 
+
+  const delay = 70; // Delay in milliseconds
+  const existingLabel = '';
+
+  let i = 1;
+  let multiplier = i.toFixed(2);
+  const checkLoop = () => {
+    if (parseFloat(multiplier) === parseFloat(crashPoint)) {
+      this.crashScore = `Crashed at ${crashPoint}x`;
+      this.end = true;
+      clearTimeout(timer); // Stop the timer
+      setTimeout(() => {
+        this.resetGameState(); // Reset the game after 3 seconds
+      }, 3000);
+    } else if (parseFloat(multiplier) < parseFloat(crashPoint)) {
+      this.crashScore = multiplier;
+      this.start=true;
+      this.addData(this.myChart, existingLabel, multiplier);
+      i += 0.01; // Increment i here after adding data
+      multiplier = i.toFixed(2); // Update the multiplier value
+      timer = setTimeout(checkLoop, delay); // Call checkLoop recursively
+    }
+  };
+  
+  let timer: any;
+
+this.countDownFromSeven(() => {
+// Code to execute after countDownFromSeven finishes
+timer = setTimeout(checkLoop, delay); // Start the first timer
+});
+  
+}
+resetGameState(){
+  this.myChart.destroy();
+  this.crashScore='1';
+  this.start=false;
+  this.end=false;
+  this.startGame();
 }
 calculateWinChance(multiplier: number): number {
   const x = multiplier;
