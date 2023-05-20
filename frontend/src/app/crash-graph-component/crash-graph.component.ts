@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MainPageService } from '../services/main-page-service';
 import { Chart, registerables } from 'chart.js';
@@ -16,21 +16,28 @@ export class CrashGraphComponent implements OnInit{
   end=false;
   myChart:any;
   constructor(private mainPageService: MainPageService) { }
-
+  @Output() multiplier: EventEmitter<number> = new EventEmitter<number>();
+  @Output() isRoundStarted: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() isBetTime: EventEmitter<boolean> = new EventEmitter<boolean>();
   ngOnInit(): void {
+    this.multiplier.emit(0);
+    this.isRoundStarted.emit(false);
   this.startGame();
     
   }
-  
+
+
   countDownFromSeven(callback: () => void): void {
-    let count = 7;
+    // 5 Seconds
+    let count = 50;
   
     const countdown = () => {
 
   
       if (count > 0) {
-        setTimeout(countdown, 1000);
-        this.crashScore = `Waiting for bets ${count}`;
+        setTimeout(countdown, 100);
+        this.crashScore = `Waiting for bets ${Math.floor(count/10)}`;
+        this.isBetTime.emit(true);
       } else {
         callback(); // Invoke the callback function
       }
@@ -73,8 +80,13 @@ startGame(){
   let i = 1;
   let multiplier = i.toFixed(2);
   const checkLoop = () => {
+    this.isBetTime.emit(false);
+    this.isRoundStarted.emit(true);
+    this.multiplier.emit(parseFloat(multiplier));
     if (parseFloat(multiplier) === parseFloat(crashPoint)) {
       this.crashScore = `Crashed at ${crashPoint}x`;
+      this.isRoundStarted.emit(false);
+      this.multiplier.emit(0);
       this.end = true;
       clearTimeout(timer); // Stop the timer
       setTimeout(() => {
@@ -99,6 +111,7 @@ timer = setTimeout(checkLoop, delay); // Start the first timer
   
 }
 resetGameState(){
+  this.multiplier.emit(0);
   this.myChart.destroy();
   this.crashScore='1';
   this.start=false;
@@ -116,7 +129,7 @@ calculateWinChance(multiplier: number): number {
  getCrashPoint() {
   const e = 2**32
   const h = crypto.getRandomValues(new Uint32Array(1))[0]
-  // if h % (100 / desired_precentage) is 0 then the game will crash immediately 
+  //if h % (100 / desired_precentage) is 0 then the game will crash immediately 
   if (h % 33.3 == 0) return 1
   return Math.floor((100*e-h) / (e-h)) / 100
 }

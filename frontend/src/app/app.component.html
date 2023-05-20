@@ -1,2 +1,16 @@
-<app-button-comp></app-button-comp>
-<app-crash-graph></app-crash-graph>
+<app-button-comp ></app-button-comp>
+<div class="float-start me-5 pe-5"> {{'WELCOME_TEXT' | translate}}</div>
+<div class="float-end me-5 pe-5"> Brinkstraat coins {{coins.toFixed(2)}}</div>
+<app-crash-graph (multiplier)="setMultiplier($event)" (isRoundStarted)="isRoundStartedEvent($event)" (isBetTime)="setIsBetTime($event)"class=""></app-crash-graph>
+<div class="bet-button ">
+    <button type="button" (click)="onClickBetButton()" class="btn btn-primary" [disabled]="!isBettingButtonEnabled">
+        {{ isInBet && isRoundStarted ? 'Cashout ' + (this.lastBet * currentMultiplier).toFixed(2) + ' coins' : 'Bet' }}
+      </button>
+      
+      
+          <input #betAmount  placeholder="Coins" class="bet-input ms-2 pb-1" (keyup.enter)="onClickBetButton()">
+    <div *ngIf="inputTouched" class="error-message">Se joaca cu numere ciobane</div>
+</div>
+
+  
+  
